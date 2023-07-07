@@ -1,5 +1,6 @@
 import requests
 import csv
+from rich.console import Console
 from pathlib import Path
 from bs4 import BeautifulSoup
 
