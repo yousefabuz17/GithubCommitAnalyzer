@@ -1,5 +1,5 @@
 # GitHub Commit Analyzer
-The GitHub Commit Analyzer is a Python application that fetches the number of commits submitted by a user over a specified time period from their GitHub profile. It then visualizes the commit data in a graph to analyze the user's consistency or lack of activity during that time.
+GitHub Commit Analyzer is a Python application that fetches commit data from a user's GitHub profile and visualizes it in a graph. It provides insights into the user's commit consistency over a specified time period. The application uses web scraping techniques to extract the commit data and generates a CSV file for further analysis. It aims to help users track their commit activity and evaluate their coding habits.
 
 ## Features
 - Fetches commit data from a specified user's GitHub profile
