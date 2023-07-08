@@ -2,10 +2,12 @@ import asyncio
 import csv
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 from datetime import datetime as dt
 from pathlib import Path
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
+
 
 
 class GithubCommit:
@@ -70,6 +72,7 @@ class DataToCSV:
                 writer.writerow([' '.join(i[-1]), i[0][0]])
         print(f'Daily GitHub Data saved as \'{file_name}\'')
 
+
 class GraphCSV:
     def __init__(self):
         self.path = Path.cwd() / 'GithubCommitAnalyzer'
@@ -79,9 +82,41 @@ class GraphCSV:
         return self.open_csv(csv_files)
     
     def open_csv(self, csv_files):
-        pass
+        num_files = csv_files.__len__()
+        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5})
+        
+        for i, file in enumerate(csv_files):
+            data = pd.read_csv(self.path / file, delimiter=',')
+            column1, column2 = data.columns
+            filtered_data = data[data[column2] != 0]
+            x = filtered_data[column1]
+            y = filtered_data[column2]
+            
+            # Create separate subplot for each file
+            ax = axes[i] if num_files > 1 else axes
+            
+            # Plot the data with customized marker and line style
+            ax.plot(x, y, marker='o', linestyle='-', label=file, color='green')
+            
+            # Set title and axis labels for each subplot
+            ax.set_title(file, fontsize=14)
+            ax.set_xlabel(column1, fontsize=12)
+            ax.set_ylabel(column2, fontsize=12)
+            
+        # Add legend for each subplot
+        ax.legend(fontsize=10)
+    
+        # Adjust layout and spacing
+        plt.tight_layout()
+        
+        # Show all the plots
+        plt.show()
+
+
 
 async def main():
+    # print('Make sure to have your projects in the same directory as this script.')
+    # github_user = input('Enter your GitHub username: ')
     projects = list(filter(lambda x: x.isalpha(), os.listdir()))
     async with ClientSession() as session:
         github = GithubCommit('yousefabuz17', projects)
