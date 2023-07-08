@@ -1,14 +1,15 @@
-import asyncio
-import csv
 import os
+import csv
+import asyncio
+import logging
 import pandas as pd
 import matplotlib.pyplot as plt
-import logging
-from rich.console import Console
 from pathlib import Path
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
 from matplotlib.ticker import MaxNLocator
+from rich.console import Console
+
 
 console = Console()
 class GithubCommit:
