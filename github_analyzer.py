@@ -98,7 +98,7 @@ class GraphCSV:
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
         
-        _, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5})
+        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5})
 
         for i, file in enumerate(csv_files):
             data = pd.read_csv(self.path / file, delimiter=',')
@@ -116,8 +116,6 @@ class GraphCSV:
 
             # Set y-axis tick values as integers
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
-        ax.legend(fontsize=10)
         plt.show()
 
 
