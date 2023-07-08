@@ -1,6 +1,7 @@
 import asyncio
 import csv
 import os
+import pandas as pd
 from datetime import datetime as dt
 from pathlib import Path
 from bs4 import BeautifulSoup
@@ -69,6 +70,13 @@ class DataToCSV:
                 writer.writerow([' '.join(i[-1]), i[0][0]])
         print(f'Daily GitHub Data saved as \'{file_name}\'')
 
+class MergeCSV:
+    def __init__(self):
+        self.path = Path.cwd() / 'GithubCommitAnalyzer'
+    
+    def fetch_csv(self):
+        csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(self.path)))
+        return csv_files
 
 async def main():
     projects = list(filter(lambda x: x.isalpha(), os.listdir()))
@@ -78,6 +86,8 @@ async def main():
             github.projects_parse_url(session),
             github.daily_parse_url(session)
         )
+    all_data = MergeCSV().fetch_csv()
+    print(all_data)
 
 
 if __name__ == '__main__':
