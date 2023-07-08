@@ -16,7 +16,6 @@ class GithubCommit:
         self.user_name = user_name
         self.projects = projects
         self.url = 'https://github.com/{}/'.format(self.user_name)
-        console.print('\tGithub Commit Analyzer', style='bold green')
 
     async def projects_parse_url(self, session):
         data = []
@@ -36,7 +35,8 @@ class GithubCommit:
                             data.append((project_names, commits_num))
             return DataToCSV(data, 'github_projects_data.csv', file_type='projects')
         except (ValueError, IndexError, ConnectionError) as e:
-            print(f"Error occurred during project parsing: {str(e)}")
+            console.print(f"Error occurred during project parsing: {str(e)}", style='red')
+            raise SystemExit
 
     async def daily_parse_url(self, session):
         data = []
@@ -54,7 +54,7 @@ class GithubCommit:
             return DataToCSV(filtered_data, 'github_daily_data.csv', file_type='daily')
         except (ValueError, IndexError, ConnectionError) as e:
             logging.info(f"Error occurred during daily parsing: {str(e)}")
-
+            raise SystemExit
 
 class DataToCSV:
     def __init__(self, data, file_name, file_type):
@@ -73,7 +73,9 @@ class DataToCSV:
                     writer.writerow(i)
             print(f'GitHub Projects Data saved as \'{file_name}\'')
         except IOError as e:
-            logging.info(f"Error occurred while trying to save projects data as CSV: {str(e)}")
+            console.print(f"Error occurred while trying to save github data as CSV: {str(e)}", style='red')
+            console.print(f'Check if username is correct', style='yellow')
+            raise SystemExit
 
     def daily_data_to_csv(self, data, file_name):
         try:
@@ -84,7 +86,9 @@ class DataToCSV:
                     writer.writerow([' '.join(i[-1]), i[0][0]])
             print(f'Daily GitHub Data saved as \'{file_name}\'')
         except IOError as e:
-            logging.info(f"Error occurred while trying to save daily data as CSV: {str(e)}")
+            console.print(f"Error occurred while trying to save github data as CSV: {str(e)}", style='red')
+            console.print(f'Check if username is correct', style='yellow')
+            raise SystemExit
 
 
 class GraphCSV:
@@ -120,6 +124,10 @@ class GraphCSV:
 
 
 async def main():
+    console.print('\tGitHub Commit Analyzer', style='bold green')
+    console.print(
+                'Notes:\n\t1. Make sure you are in your github project folder directory!\n',
+                '\t2. Also logged into your github account.',style='yellow')
     try:
         github_user = input('Enter your GitHub username: ')
         projects = list(filter(lambda x: x.isalpha(), os.listdir()))
@@ -129,11 +137,15 @@ async def main():
                 github.projects_parse_url(session),
                 github.daily_parse_url(session)
             )
-        graphs = GraphCSV().fetch_csv()
-        print(graphs)
+        console.print('Generating graphs', style='bold cyan')
+        GraphCSV().fetch_csv()
+        console.print('\t\nGitHub Commit Analyzer Completed.', style='bold red')
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+        raise SystemExit
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try: asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        console.print('Program Terminated', style='bold red')
