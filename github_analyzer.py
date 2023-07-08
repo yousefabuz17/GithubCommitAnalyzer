@@ -115,6 +115,7 @@ class GraphCSV:
             # Create separate subplot for each file
             ax = axes[i] if num_files > 1 else axes
             ax.plot(x, y, marker='o', linestyle='-', label=file, color='green')
+            ax.grid(True)
             ax.set_title(file, fontsize=14)
             ax.set_xlabel(column1, fontsize=12)
             ax.set_ylabel(column2, fontsize=12)
