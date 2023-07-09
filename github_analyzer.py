@@ -35,7 +35,7 @@ class GithubCommit:
                             commits_index = [m - 1 for m, _ in enumerate(j) if _ == 'commits'][0]
                             commits_num = int(j[commits_index:commits_index + 2][0])
                             data.append((project_names, commits_num))
-            return DataToCSV(data, 'github_projects_data.csv', file_type='projects')
+            return DataToCSV(data, 'GH_projects_data.csv', file_type='projects')
         except (ValueError, IndexError, ConnectionError) as e:
             console.print(f"Error occurred during project parsing: {str(e)}", style='red')
             raise SystemExit
@@ -53,7 +53,7 @@ class GithubCommit:
                         j = j.text.split()
                         data.append(([i if i.isdigit() else 0 for i in j[:3]], j[-3:]))
             filtered_data = list(filter(lambda x: str(x) != '([], [])', data))
-            return DataToCSV(filtered_data, 'github_daily_data.csv', file_type='daily')
+            return DataToCSV(filtered_data, 'GH_daily_data.csv', file_type='daily')
         except (ValueError, IndexError, ConnectionError) as e:
             logging.info(f"Error occurred during daily parsing: {str(e)}")
             raise SystemExit
