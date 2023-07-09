@@ -1,6 +1,7 @@
 import os
 import re
 import csv
+import shutil
 import asyncio
 import logging
 import pandas as pd
@@ -92,6 +93,25 @@ class DataToCSV:
             console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
 
+# TODO: Create a ? to distinguish between old and new data
+# ! Change file names to include date, for old and new data
+    # ? GH_projects_data_1974-07-02.csv
+    # ? Should be a class? Function? Or separate script?
+# ? Possible steps to take:
+    # ** After first run, if old_data folder is empty, move current data to old_data folder
+    # ** If old_data folder is not empty, check difference between current data and old data
+    # ** If difference is found:
+        # ** retrieve difference and move current data to old_data and graph difference
+        # ** If no difference is found, do nothing and graph current data
+    # ** 
+
+def move_data():
+    console.print('Moving data to \'Old_data\' folder', style='bold cyan')
+    path = Path.cwd() / 'GithubCommitAnalyzer'
+    old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
+    csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(path)))
+    for i in csv_files:
+        shutil.copyfile(path / i, old_data_path / i)
 
 class GraphCSV:
     def __init__(self):
@@ -123,6 +143,7 @@ class GraphCSV:
 
             # Set y-axis tick values as integers
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+        move_data()
         plt.show()
 
 
