@@ -91,9 +91,6 @@ class DataToCSV:
             console.print(f"Error occurred while trying to save github data as CSV: {str(e)}", style='red')
             console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
-    
-    def get_file_type(self):
-        return self.file_type
 
 
 class GraphCSV:
@@ -111,7 +108,6 @@ class GraphCSV:
 
         for i, file in enumerate(csv_files):
             data = pd.read_csv(self.path / file, delimiter=',')
-            file_type = DataToCSV(data, file).get_file_type().title()
             column1, column2 = data.columns
             filtered_data = data[data[column2] != 0]
             x = filtered_data[column1]
@@ -121,7 +117,7 @@ class GraphCSV:
             ax = axes[i] if num_files > 1 else axes
             ax.plot(x, y, marker='o', linestyle='-', label=file, color='green')
             ax.grid(True)
-            ax.set_title(file_type, fontsize=14)
+            ax.set_title(re.match(r'GH_(\w+)_data.csv', file).group(1).title(), fontsize=14)
             ax.set_xlabel(column1, fontsize=12)
             ax.set_ylabel(column2, fontsize=12)
 
