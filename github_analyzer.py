@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from bs4 import BeautifulSoup
 from aiohttp import ClientSession
+from datetime import datetime as dt
 from matplotlib.ticker import MaxNLocator
 from rich.console import Console
 
@@ -110,8 +111,17 @@ def move_data():
     path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
     csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(path)))
-    for i in csv_files:
-        shutil.copyfile(path / i, old_data_path / i)
+    
+    def get_file_date(file):
+        file_name = file.split('.')[0]
+        file_path = Path.cwd() / 'GithubCommitAnalyzer' / file
+        modified_timestamp = dt.fromtimestamp(os.path.getmtime(file_path))
+        modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
+        return f'{file_name}_{modified_time}.csv'
+    
+    modify_files = list(map(get_file_date, csv_files))
+    for i in range(len(csv_files)):
+        shutil.copyfile(path / csv_files[i], old_data_path / modify_files[i])
 
 class GraphCSV:
     def __init__(self):
