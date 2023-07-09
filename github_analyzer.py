@@ -97,7 +97,7 @@ class DataToCSV:
             raise SystemExit
 
 # TODO: Create a ? to distinguish between old and new data
-# ! Change file names to include date, for old and new data
+# ! Change file names to include date, for old data
     # ? GH_projects_data_1974-07-02.csv
     # ? Should be a class? Function? Or separate script?
 # ? Possible steps to take:
@@ -135,8 +135,7 @@ class GraphCSV:
 
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
-        
-        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5})
+        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5}, num='GitHub Commit Analyzer')
 
         for i, file in enumerate(csv_files):
             data = pd.read_csv(self.path / file, delimiter=',')
@@ -185,3 +184,6 @@ if __name__ == '__main__':
     try: asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         console.print('Program Terminated', style='bold red')
+
+
+# Write a program that will show todays date
