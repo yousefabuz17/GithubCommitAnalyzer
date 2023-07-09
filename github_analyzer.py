@@ -1,4 +1,5 @@
 import os
+import re
 import csv
 import asyncio
 import logging
@@ -59,12 +60,11 @@ class GithubCommit:
             raise SystemExit
 
 class DataToCSV:
-    def __init__(self, data, file_name, file_type):
+    def __init__(self, data, file_name, file_type=None):
         self.data = data
         self.file_name = file_name
-        self.file_type = file_type
-        self.projects_data_to_csv(self.data, self.file_name) if self.file_type == 'projects' else self.daily_data_to_csv(
-            self.data, self.file_name)
+        self.file_type = re.match(r'GH_(\w+)_data.csv', self.file_name).group(1)
+        self.projects_data_to_csv(data, file_name) if self.file_type == 'projects' else self.daily_data_to_csv(data, file_name)
 
     def projects_data_to_csv(self, data, file_name):
         try:
@@ -91,6 +91,9 @@ class DataToCSV:
             console.print(f"Error occurred while trying to save github data as CSV: {str(e)}", style='red')
             console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
+    
+    def get_file_type(self):
+        return self.file_type
 
 
 class GraphCSV:
@@ -108,6 +111,7 @@ class GraphCSV:
 
         for i, file in enumerate(csv_files):
             data = pd.read_csv(self.path / file, delimiter=',')
+            file_type = DataToCSV(data, file).get_file_type().title()
             column1, column2 = data.columns
             filtered_data = data[data[column2] != 0]
             x = filtered_data[column1]
@@ -117,7 +121,7 @@ class GraphCSV:
             ax = axes[i] if num_files > 1 else axes
             ax.plot(x, y, marker='o', linestyle='-', label=file, color='green')
             ax.grid(True)
-            ax.set_title(file, fontsize=14)
+            ax.set_title(file_type, fontsize=14)
             ax.set_xlabel(column1, fontsize=12)
             ax.set_ylabel(column2, fontsize=12)
 
