@@ -12,6 +12,7 @@ from rich.console import Console
 
 
 console = Console()
+
 class GithubCommit:
     def __init__(self, user_name, projects: list[str] = None):
         self.user_name = user_name
