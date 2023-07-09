@@ -41,6 +41,7 @@ class GithubCommit:
             return DataToCSV(data, 'GH_projects_data.csv', file_type='projects')
         except (ValueError, IndexError, ConnectionError) as e:
             console.print(f"Error occurred during project parsing: {str(e)}", style='red')
+            console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
 
     async def daily_parse_url(self, session):
@@ -59,6 +60,7 @@ class GithubCommit:
             return DataToCSV(filtered_data, 'GH_daily_data.csv', file_type='daily')
         except (ValueError, IndexError, ConnectionError) as e:
             logging.info(f"Error occurred during daily parsing: {str(e)}")
+            console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
 
 class DataToCSV:
@@ -107,7 +109,7 @@ class DataToCSV:
     # ** 
 
 def move_data():
-    console.print('Moving data to \'Old_data\' folder', style='bold cyan')
+    console.print('Moving data to \'Old_data\' folder', style='bold')
     path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
     csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(path)))
@@ -121,7 +123,7 @@ def move_data():
     
     modify_files = list(map(get_file_date, csv_files))
     for i in range(len(csv_files)):
-        shutil.copyfile(path / csv_files[i], old_data_path / modify_files[i])
+        shutil.copy(path / csv_files[i], old_data_path / modify_files[i])
 
 class GraphCSV:
     def __init__(self):
@@ -173,7 +175,7 @@ async def main():
             )
         console.print('Generating graphs', style='bold cyan')
         GraphCSV().fetch_csv()
-        console.print('\t\nGitHub Commit Analyzer Completed.', style='bold red')
+        console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         raise SystemExit
