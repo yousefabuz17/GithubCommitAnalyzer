@@ -196,7 +196,9 @@ class GraphCSV:
             ax.set_xlabel(column1, fontsize=12)
             ax.set_ylabel(column2, fontsize=12)
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-
+        
+        plt.text(0.01, 2.531, f'Total Commits: {sum(y)}', transform=plt.gca().transAxes,
+                    fontsize=10, verticalalignment='baseline', bbox=dict(boxstyle='round', facecolor='white'))
         plt.show()
 
 
