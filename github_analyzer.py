@@ -153,11 +153,13 @@ def data_configuration():
         project_diff = compare_csv(old_project_data, new_project_data)
         
         if not daily_diff.empty:
+            console.print('New data found. Warping old data', style='yellow')   
             get_diff = lambda diff: abs(diff['Commit Count'].diff().dropna().to_list()[0])
             daily_num_diff, project_num_diff = list(map(get_diff, [daily_diff, project_diff]))
             move_file(new_files)
             remove_oldest_files(old_data_path, 2)
             return daily_num_diff, project_num_diff
+        console.print('No differences found based on previous data. Data will remain the same. Graphing current data.', style='bold white')
     return [0, 0]   # If no difference is found
 
 
@@ -190,7 +192,7 @@ class GraphCSV:
 
             # Set y-axis tick values as integers
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-            plt.legend(loc='upper right', fontsize=7)
+        plt.legend(loc='upper right', fontsize=7)
         plt.show()
 
 
