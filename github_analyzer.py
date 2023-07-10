@@ -132,6 +132,7 @@ def data_configuration():
     
     if len(os.listdir(old_data_path)) == 0:   # If old_data folder is empty
         console.print('Moving data to \'Old_data\' folder', style='bold')
+        console.print('Generating graphs', style='bold cyan')
         move_file(new_files)
         
     else:
@@ -150,6 +151,7 @@ def data_configuration():
             daily_num_diff, project_num_diff = list(map(get_diff, [daily_diff, project_diff]))
             move_file(new_files)
             remove_oldest_files(old_data_path, 2)
+            console.print('Generating graphs', style='bold cyan')
             return daily_num_diff, project_num_diff
         console.print('No differences found based on previous data. Data will remain the same.', style='bold white')
         console.print('Generating graphs', style='bold cyan')
@@ -167,9 +169,10 @@ class GraphCSV:
 
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
-        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5}, num='GitHub Commit Analyzer', label='testing')
+        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5}, num='GitHub Commit Analyzer')
         daily_num_diff, project_num_diff = data_configuration()
         for i, file in enumerate(csv_files):
+            file_type = re.match(r'GH_(\w+)_data.csv', file).group(1).title()
             data = pd.read_csv(self.path / file, delimiter=',')
             column1, column2 = data.columns
             filtered_data = data[data[column2] != 0]
@@ -178,15 +181,15 @@ class GraphCSV:
 
             # Create separate subplot for each file
             ax = axes[i] if num_files > 1 else axes
-            ax.plot(x, y, marker='o', linestyle='-', label=file, color='green', mew=2, ms=5)
+            line, = ax.plot(x, y, marker='o', linestyle='-', label=file, color='green', mew=2, ms=5)
             ax.grid(True)
-            ax.set_title(re.match(r'GH_(\w+)_data.csv', file).group(1).title(), fontsize=14)
+            ax.set_title(file_type, fontsize=14)
             ax.set_xlabel(column1, fontsize=12)
             ax.set_ylabel(column2, fontsize=12)
-
             # Set y-axis tick values as integers
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        plt.legend(loc='upper right', fontsize=7)
+            ax.legend([line], [f'{daily_num_diff if "daily" in file else project_num_diff} Commits made'], loc='upper right', fontsize=7)
+        
         plt.show()
 
 
