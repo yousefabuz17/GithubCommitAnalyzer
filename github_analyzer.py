@@ -1,18 +1,20 @@
+import asyncio
+import csv
+import json
+import logging
 import os
 import re
-import csv
 import shutil
-import asyncio
-import logging
-import json
-import pandas as pd
-import matplotlib.pyplot as plt
-from pathlib import Path
-from bs4 import BeautifulSoup
-from aiohttp import ClientSession
 from datetime import datetime as dt
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
+from aiohttp import ClientSession
+from bs4 import BeautifulSoup
 from matplotlib.ticker import MaxNLocator
 from rich.console import Console
+
 
 
 console = Console()
