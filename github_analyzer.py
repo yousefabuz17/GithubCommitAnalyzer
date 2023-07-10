@@ -101,12 +101,11 @@ class DataToCSV:
     # ? GH_projects_data_1974-07-02.csv
     # ? Should be a class? Function? Or separate script?
 # ? Possible steps to take:
-    # ** After first run, if old_data folder is empty, move current data to old_data folder
+    # ** After first run, if old_data folder is empty, move current data to old_data folder and graph normally
     # ** If old_data folder is not empty, check difference between current data and old data
     # ** If difference is found:
         # ** retrieve difference and move current data to old_data and graph difference
         # ** If no difference is found, do nothing and graph current data
-    # ** 
 
 def move_data():
     console.print('Moving data to \'Old_data\' folder', style='bold')
@@ -122,8 +121,17 @@ def move_data():
         return f'{file_name}_{modified_time}.csv'
     
     modify_files = list(map(get_file_date, csv_files))
-    for i in range(len(csv_files)):
-        shutil.copy(path / csv_files[i], old_data_path / modify_files[i])
+    old_files = []
+    if len(os.listdir(old_data_path)) == 0:   # If old_data folder is empty
+        for i in range(len(csv_files)):
+            shutil.copy(path / csv_files[i], old_data_path / modify_files[i])
+            old_files.append(modify_files[i])
+    else:
+        old_files = os.listdir(old_data_path)
+        old_files.sort(key=lambda x: x[3])
+        old_daily_data, old_project_data = old_files
+        
+    
 
 class GraphCSV:
     def __init__(self):
@@ -146,7 +154,7 @@ class GraphCSV:
 
             # Create separate subplot for each file
             ax = axes[i] if num_files > 1 else axes
-            ax.plot(x, y, marker='o', linestyle='-', label=file, color='green')
+            ax.plot(x, y, marker='o', linestyle='-', label=file, color='green', mew=2, ms=5)
             ax.grid(True)
             ax.set_title(re.match(r'GH_(\w+)_data.csv', file).group(1).title(), fontsize=14)
             ax.set_xlabel(column1, fontsize=12)
@@ -164,10 +172,10 @@ async def main():
                 'Notes:\n\t1. Make sure you are in your github project folder directory!\n',
                 '\t2. Also logged into your github account.',style='yellow')
     try:
-        github_user = input('Enter your GitHub username: ')
+        # github_user = input('Enter your GitHub username: ')
         projects = list(filter(lambda x: x.isalpha(), os.listdir()))
         async with ClientSession() as session:
-            github = GithubCommit(github_user, projects)
+            github = GithubCommit('yousefabuz17', projects)
             await asyncio.gather(
                 github.projects_parse_url(session),
                 github.daily_parse_url(session)
@@ -184,6 +192,3 @@ if __name__ == '__main__':
     try: asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         console.print('Program Terminated', style='bold red')
-
-
-# Write a program that will show todays date
