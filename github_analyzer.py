@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from matplotlib.ticker import MaxNLocator
 from rich.console import Console
 
-
+# TODO: Use Github API instead of web scraping
 
 console = Console()
 
@@ -171,7 +171,11 @@ class GraphCSV:
 
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
-        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5}, num='GitHub Commit Analyzer')
+        fig, axes = plt.subplots(nrows=num_files, 
+                                figsize=(10, 6 * num_files),
+                                gridspec_kw={'hspace': 0.5},
+                                num='GitHub Commit Analyzer')
+        
         daily_num_diff, project_num_diff = data_configuration()
         both_diffs = list(map(int, [daily_num_diff, project_num_diff]))
         for i, file in enumerate(csv_files):
@@ -206,7 +210,9 @@ async def main():
     console.print('\tGitHub Commit Analyzer', style='bold green')
     console.print(
                 'Notes:\n\t1. Make sure you are in your github project folder directory!\n',
-                '\t2. Also logged into your github account.',style='yellow')
+                '\t2. Logged into your github account on your default browser.\n',
+                '\t3. Change the \'github_user.json\' file to your github username.\n',
+                style='yellow')
     try:
         github_user = json.load(open(Path.cwd() / 'GithubCommitAnalyzer' / 'github_user.json'))['username']
         projects = list(filter(lambda x: x.isalpha(), os.listdir()))
