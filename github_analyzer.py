@@ -156,7 +156,7 @@ def data_configuration():
             move_file(new_files)
             remove_oldest_files(old_data_path)
             return daily_num_diff, project_num_diff
-    return [0, 0]
+    return [0, 0]   # If no difference is found
 
 
 class GraphCSV:
