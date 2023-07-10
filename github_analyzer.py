@@ -111,7 +111,7 @@ def move_data():
     console.print('Moving data to \'Old_data\' folder', style='bold')
     path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
-    csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(path)))
+    csv_files = sorted(list(filter(lambda x: x.endswith('.csv'), os.listdir(path))), key=lambda x: x[3])
     
     def get_file_date(file):
         file_name = file.split('.')[0]
@@ -120,7 +120,7 @@ def move_data():
         modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
         return f'{file_name}_{modified_time}.csv'
     
-    modify_files = list(map(get_file_date, csv_files))
+    modify_files = sorted(list(map(get_file_date, csv_files)), key=lambda x: x[3])
     old_files = []
     if len(os.listdir(old_data_path)) == 0:   # If old_data folder is empty
         for i in range(len(csv_files)):
@@ -130,6 +130,10 @@ def move_data():
         old_files = os.listdir(old_data_path)
         old_files.sort(key=lambda x: x[3])
         old_daily_data, old_project_data = old_files
+        new_daily_data, new_project_data = csv_files
+        daily_differences = pd.read_csv(path / new_daily_data).merge(pd.read_csv(old_data_path / old_daily_data), how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
+        projects_differences = pd.read_csv(path / new_project_data).merge(pd.read_csv(old_data_path / old_project_data), how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
+        print(daily_differences, projects_differences, sep='\n')
         
     
 
