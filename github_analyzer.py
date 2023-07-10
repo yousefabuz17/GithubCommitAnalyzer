@@ -120,11 +120,13 @@ def data_configuration():
         modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
         return f'{file_name}_{modified_time}.csv'
     
-    def remove_oldest_files(folder_path):
+    def remove_oldest_files(folder_path, num_files_to_keep):
         files = os.listdir(folder_path)
-        if files:
-            oldest_file = min(files, key=lambda f: os.path.getctime(os.path.join(folder_path, f)))
-            os.remove(os.path.join(folder_path, oldest_file))
+        if len(files) > num_files_to_keep:
+            files.sort(key=lambda f: os.path.getctime(os.path.join(folder_path, f)))
+            files_to_remove = files[:-num_files_to_keep]
+            for file in files_to_remove:
+                os.remove(os.path.join(folder_path, file))
     
     def move_file(new_files):
         for i in range(len(new_files)):
@@ -154,7 +156,7 @@ def data_configuration():
             get_diff = lambda diff: abs(diff['Commit Count'].diff().dropna().to_list()[0])
             daily_num_diff, project_num_diff = list(map(get_diff, [daily_diff, project_diff]))
             move_file(new_files)
-            remove_oldest_files(old_data_path)
+            remove_oldest_files(old_data_path, 2)
             return daily_num_diff, project_num_diff
     return [0, 0]   # If no difference is found
 
