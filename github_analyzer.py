@@ -74,7 +74,7 @@ class DataToCSV:
         try:
             with open(Path.cwd() / 'GithubCommitAnalyzer' / file_name, 'w', newline='') as f:
                 writer = csv.writer(f)
-                writer.writerow(['Project Name', 'Total Project Commit Count'])
+                writer.writerow(['Project', 'Commit Count'])
                 for i in data:
                     writer.writerow(i)
             print(f'GitHub Projects Data saved as \'{file_name}\'')
@@ -107,7 +107,7 @@ class DataToCSV:
         # ** retrieve difference and move current data to old_data and graph difference
         # ** If no difference is found, do nothing and graph current data
 
-def move_data():
+def data_configuration():
     console.print('Moving data to \'Old_data\' folder', style='bold')
     path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
@@ -131,9 +131,14 @@ def move_data():
         old_files.sort(key=lambda x: x[3])
         old_daily_data, old_project_data = old_files
         new_daily_data, new_project_data = csv_files
-        daily_differences = pd.read_csv(path / new_daily_data).merge(pd.read_csv(old_data_path / old_daily_data), how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
-        projects_differences = pd.read_csv(path / new_project_data).merge(pd.read_csv(old_data_path / old_project_data), how='outer', indicator=True).loc[lambda x: x['_merge'] == 'left_only']
-        print(daily_differences, projects_differences, sep='\n')
+        
+        def compare_csv(old_data, new_data):
+            differences = pd.read_csv(path / new_data).merge(pd.read_csv(old_data_path / old_data), how='outer', indicator=True).loc[lambda x: x['_merge'] != 'both']
+            return differences
+        daily_diff = compare_csv(old_daily_data, new_daily_data)
+        project_diff = compare_csv(old_project_data, new_project_data)
+        if not daily_diff.empty:
+            print(daily_diff['Commit Count'], project_diff['Commit Count'], sep='\n')
         
     
 
@@ -166,7 +171,7 @@ class GraphCSV:
 
             # Set y-axis tick values as integers
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        move_data()
+        data_configuration()
         plt.show()
 
 
