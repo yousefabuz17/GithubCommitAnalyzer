@@ -4,6 +4,7 @@ import csv
 import shutil
 import asyncio
 import logging
+import json
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -96,7 +97,6 @@ class DataToCSV:
             console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
 
-# TODO: Make graph have better legend
 
 def data_configuration():
     path = Path.cwd() / 'GithubCommitAnalyzer'
@@ -204,10 +204,10 @@ async def main():
                 'Notes:\n\t1. Make sure you are in your github project folder directory!\n',
                 '\t2. Also logged into your github account.',style='yellow')
     try:
-        # github_user = input('Enter your GitHub username: ')
+        github_user = json.load(open(Path.cwd() / 'GithubCommitAnalyzer' / 'github_user.json'))['username']
         projects = list(filter(lambda x: x.isalpha(), os.listdir()))
         async with ClientSession() as session:
-            github = GithubCommit('yousefabuz17', projects)
+            github = GithubCommit(github_user, projects)
             await asyncio.gather(
                 github.projects_parse_url(session),
                 github.daily_parse_url(session)
