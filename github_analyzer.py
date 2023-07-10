@@ -111,7 +111,7 @@ def data_configuration():
     console.print('Moving data to \'Old_data\' folder', style='bold')
     path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
-    csv_files = sorted(list(filter(lambda x: x.endswith('.csv'), os.listdir(path))), key=lambda x: x[3])
+    new_files = sorted(list(filter(lambda x: x.endswith('.csv'), os.listdir(path))), key=lambda x: x[3])
     
     def get_file_date(file):
         file_name = file.split('.')[0]
@@ -120,27 +120,44 @@ def data_configuration():
         modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
         return f'{file_name}_{modified_time}.csv'
     
-    modify_files = sorted(list(map(get_file_date, csv_files)), key=lambda x: x[3])
-    old_files = []
-    if len(os.listdir(old_data_path)) == 0:   # If old_data folder is empty
-        for i in range(len(csv_files)):
-            shutil.copy(path / csv_files[i], old_data_path / modify_files[i])
+    def remove_oldest_files(folder_path):
+        files = os.listdir(folder_path)
+        if files:
+            oldest_file = min(files, key=lambda f: os.path.getctime(os.path.join(folder_path, f)))
+            os.remove(os.path.join(folder_path, oldest_file))
+    
+    def move_file(new_files):
+        for i in range(len(new_files)):
+            shutil.copy(path / new_files[i], old_data_path / modify_files[i])
             old_files.append(modify_files[i])
+    
+    def compare_csv(old_data, new_data):
+            differences = pd.read_csv(path / new_data).merge(pd.read_csv(old_data_path / old_data), how='outer', indicator=True).loc[lambda x: x['_merge'] != 'both']
+            return differences
+    
+    modify_files = sorted(list(map(get_file_date, new_files)), key=lambda x: x[3])
+    old_files = []
+    
+    if len(os.listdir(old_data_path)) == 0:   # If old_data folder is empty
+        move_file(new_files)
+        
     else:
         old_files = os.listdir(old_data_path)
         old_files.sort(key=lambda x: x[3])
         old_daily_data, old_project_data = old_files
-        new_daily_data, new_project_data = csv_files
+        new_daily_data, new_project_data = new_files
         
-        def compare_csv(old_data, new_data):
-            differences = pd.read_csv(path / new_data).merge(pd.read_csv(old_data_path / old_data), how='outer', indicator=True).loc[lambda x: x['_merge'] != 'both']
-            return differences
         daily_diff = compare_csv(old_daily_data, new_daily_data)
         project_diff = compare_csv(old_project_data, new_project_data)
-        if not daily_diff.empty:
-            print(daily_diff['Commit Count'], project_diff['Commit Count'], sep='\n')
         
-    
+        if not daily_diff.empty:
+            get_diff = lambda diff: abs(diff['Commit Count'].diff().dropna().to_list()[0])
+            daily_num_diff, project_num_diff = list(map(get_diff, [daily_diff, project_diff]))
+            move_file(new_files)
+            remove_oldest_files(old_data_path)
+            return daily_num_diff, project_num_diff
+    return [0, 0]
+
 
 class GraphCSV:
     def __init__(self):
@@ -152,8 +169,8 @@ class GraphCSV:
 
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
-        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5}, num='GitHub Commit Analyzer')
-
+        fig, axes = plt.subplots(nrows=num_files, figsize=(10, 6 * num_files), gridspec_kw={'hspace': 0.5}, num='GitHub Commit Analyzer', label='testing')
+        daily_num_diff, project_num_diff = data_configuration()
         for i, file in enumerate(csv_files):
             data = pd.read_csv(self.path / file, delimiter=',')
             column1, column2 = data.columns
@@ -171,7 +188,7 @@ class GraphCSV:
 
             # Set y-axis tick values as integers
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        data_configuration()
+            plt.legend(loc='upper right', fontsize=7)
         plt.show()
 
 
