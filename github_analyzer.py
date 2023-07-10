@@ -68,6 +68,7 @@ class GithubCommit:
 
 class DataToCSV:
     def __init__(self, data, file_name, file_type=None):
+        self.path = Path(__file__).parent.absolute()
         self.data = data
         self.file_name = file_name
         self.file_type = re.match(r'GH_(\w+)_data.csv', self.file_name).group(1)
@@ -75,7 +76,7 @@ class DataToCSV:
 
     def projects_data_to_csv(self, data, file_name):
         try:
-            with open(Path.cwd() / 'GithubCommitAnalyzer' / file_name, 'w', newline='') as f:
+            with open(self.path / file_name, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(['Project', 'Commit Count'])
                 for i in data:
@@ -88,7 +89,7 @@ class DataToCSV:
 
     def daily_data_to_csv(self, data, file_name):
         try:
-            with open(Path.cwd() / 'GithubCommitAnalyzer' / file_name, 'w', newline='') as f:
+            with open(self.path / file_name, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(['Date', 'Commit Count'])
                 for i in data:
@@ -101,13 +102,13 @@ class DataToCSV:
 
 
 def data_configuration():
-    path = Path.cwd() / 'GithubCommitAnalyzer'
-    old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
+    path = Path(__file__).parent.absolute()
+    old_data_path = path / 'Old_data'
     new_files = sorted(list(filter(lambda x: x.endswith('.csv'), os.listdir(path))), key=lambda x: x[3])
     
     def get_file_date(file):
         file_name = file.split('.')[0]
-        file_path = Path.cwd() / 'GithubCommitAnalyzer' / file
+        file_path = path / file
         modified_timestamp = dt.fromtimestamp(os.path.getmtime(file_path))
         modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
         return f'{file_name}_{modified_time}.csv'
@@ -163,7 +164,7 @@ def data_configuration():
 
 class GraphCSV:
     def __init__(self):
-        self.path = Path.cwd() / 'GithubCommitAnalyzer'
+        self.path = Path(__file__).parent.absolute()
 
     def fetch_csv(self):
         csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(self.path)))
