@@ -96,19 +96,9 @@ class DataToCSV:
             console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
 
-# TODO: Create a ? to distinguish between old and new data
-# ! Change file names to include date, for old data
-    # ? GH_projects_data_1974-07-02.csv
-    # ? Should be a class? Function? Or separate script?
-# ? Possible steps to take:
-    # ** After first run, if old_data folder is empty, move current data to old_data folder and graph normally
-    # ** If old_data folder is not empty, check difference between current data and old data
-    # ** If difference is found:
-        # ** retrieve difference and move current data to old_data and graph difference
-        # ** If no difference is found, do nothing and graph current data
+# TODO: Make graph have better legend
 
 def data_configuration():
-    console.print('Moving data to \'Old_data\' folder', style='bold')
     path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = Path.cwd() / 'GithubCommitAnalyzer' / 'Old_data'
     new_files = sorted(list(filter(lambda x: x.endswith('.csv'), os.listdir(path))), key=lambda x: x[3])
@@ -141,9 +131,11 @@ def data_configuration():
     old_files = []
     
     if len(os.listdir(old_data_path)) == 0:   # If old_data folder is empty
+        console.print('Moving data to \'Old_data\' folder', style='bold')
         move_file(new_files)
         
     else:
+        console.print('Comparing old data with current.', style='bold white')
         old_files = os.listdir(old_data_path)
         old_files.sort(key=lambda x: x[3])
         old_daily_data, old_project_data = old_files
@@ -159,7 +151,9 @@ def data_configuration():
             move_file(new_files)
             remove_oldest_files(old_data_path, 2)
             return daily_num_diff, project_num_diff
-        console.print('No differences found based on previous data. Data will remain the same. Graphing current data.', style='bold white')
+        console.print('No differences found based on previous data. Data will remain the same.', style='bold white')
+        console.print('Generating graphs', style='bold cyan')
+        
     return [0, 0]   # If no difference is found
 
 
@@ -210,7 +204,6 @@ async def main():
                 github.projects_parse_url(session),
                 github.daily_parse_url(session)
             )
-        console.print('Generating graphs', style='bold cyan')
         GraphCSV().fetch_csv()
         console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
     except Exception as e:
