@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import shutil
+
 from datetime import datetime as dt
 from pathlib import Path
 
@@ -16,6 +17,7 @@ from matplotlib.ticker import MaxNLocator
 from rich.console import Console
 
 # TODO: Use Github API instead of web scraping
+# TODO: Save all graphs into a folder and use streamlit to display them
 
 console = Console()
 
@@ -177,6 +179,11 @@ class GraphCSV:
         csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(self.path)))
         return self.graph_csv(csv_files)
 
+    def get_date(self):
+        modified_timestamp = dt.fromtimestamp(dt.timestamp(dt.now()))
+        modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
+        return f"Figure_{modified_time}"
+    
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
         fig, axes = plt.subplots(
@@ -222,6 +229,7 @@ class GraphCSV:
                 fontsize=10,
                 verticalalignment='baseline',
                 bbox=dict(boxstyle='round',facecolor='white'))
+        plt.savefig(self.path / 'Figures' / f'{self.get_date()}.jpeg', bbox_inches='tight')
         plt.show()
 
 
