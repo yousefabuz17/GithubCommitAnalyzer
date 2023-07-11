@@ -38,14 +38,16 @@ class GithubCommit:
                                 continue
                             j = j.text.split()
                             project_names = j[2]
-                            commits_index = [m - 1 for m, _ in enumerate(j) if _ == 'commits'][0]
-                            commits_num = int(j[commits_index:commits_index + 2][0])
-                            data.append((project_names, commits_num))
-            return DataToCSV(data, 'GH_projects_data.csv', file_type='projects')
+                            commits_indices = [m - 1 for m, _ in enumerate(j) if _ == 'commits']
+                            if len(commits_indices) > 0:
+                                commits_index = commits_indices[0]
+                                commits_num = int(j[commits_index:commits_index + 2][0])
+                                data.append((project_names, commits_num))
         except (ValueError, IndexError, ConnectionError) as e:
             console.print(f"Error occurred during project parsing: {str(e)}", style='red')
             console.print(f'Check if username is correct', style='yellow')
             raise SystemExit
+        return DataToCSV(data, 'GH_projects_data.csv', file_type='projects')
 
     async def daily_parse_url(self, session):
         data = []
@@ -68,7 +70,7 @@ class GithubCommit:
 
 class DataToCSV:
     def __init__(self, data, file_name, file_type=None):
-        self.path = Path(__file__).parent.absolute()
+        self.path = Path.cwd()
         self.data = data
         self.file_name = file_name
         self.file_type = re.match(r'GH_(\w+)_data.csv', self.file_name).group(1)
@@ -76,7 +78,7 @@ class DataToCSV:
 
     def projects_data_to_csv(self, data, file_name):
         try:
-            with open(self.path / file_name, 'w', newline='') as f:
+            with open(self.path / 'GithubCommitAnalyzer' / file_name, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(['Project', 'Commit Count'])
                 for i in data:
@@ -89,7 +91,7 @@ class DataToCSV:
 
     def daily_data_to_csv(self, data, file_name):
         try:
-            with open(self.path / file_name, 'w', newline='') as f:
+            with open(self.path / 'GithubCommitAnalyzer' / file_name, 'w', newline='') as f:
                 writer = csv.writer(f)
                 writer.writerow(['Date', 'Commit Count'])
                 for i in data:
@@ -102,7 +104,7 @@ class DataToCSV:
 
 
 def data_configuration():
-    path = Path(__file__).parent.absolute()
+    path = Path.cwd() / 'GithubCommitAnalyzer'
     old_data_path = path / 'Old_data'
     new_files = sorted(list(filter(lambda x: x.endswith('.csv'), os.listdir(path))), key=lambda x: x[3])
     
@@ -164,7 +166,7 @@ def data_configuration():
 
 class GraphCSV:
     def __init__(self):
-        self.path = Path(__file__).parent.absolute()
+        self.path = Path.cwd() / 'GithubCommitAnalyzer'
 
     def fetch_csv(self):
         csv_files = list(filter(lambda x: x.endswith('.csv'), os.listdir(self.path)))
@@ -216,7 +218,7 @@ async def main():
                 style='yellow')
     try:
         github_user = json.load(open(Path.cwd() / 'GithubCommitAnalyzer' / 'github_user.json'))['username']
-        projects = list(filter(lambda x: x.isalpha(), os.listdir()))
+        projects = list(filter(lambda x: x.isalpha(), os.listdir(Path.cwd())))
         async with ClientSession() as session:
             github = GithubCommit(github_user, projects)
             await asyncio.gather(
