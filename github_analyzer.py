@@ -20,6 +20,7 @@ from rich.console import Console
 
 # TODO: Use Github API instead of web scraping
 # TODO: Save all graphs into a folder and use streamlit to display them
+# TODO: Add time and date on each graph
 
 console = Console()
 
@@ -233,8 +234,8 @@ class GraphCSV:
                 verticalalignment='baseline',
                 bbox=dict(boxstyle='round',facecolor='white'))
         plt.savefig(self.path / 'Figures' / f'{self.get_date()}.jpeg', bbox_inches='tight')
-        plt.close()
         #plt.show() # Uncomment to show graph. Using streamlit to display all graphs instead
+        plt.close()
 
 def streamlit_graphs():
     console.print('Opening GitHub Dashboard', style='bold cyan')
