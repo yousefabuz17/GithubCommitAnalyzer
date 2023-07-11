@@ -174,13 +174,16 @@ class GraphCSV:
 
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
-        fig, axes = plt.subplots(nrows=num_files, 
-                                figsize=(10, 6 * num_files),
-                                gridspec_kw={'hspace': 0.5},
-                                num='GitHub Commit Analyzer')
-        
+        fig, axes = plt.subplots(
+            nrows=num_files,
+            figsize=(10, 6 * num_files),
+            gridspec_kw={'hspace': 0.5},
+            num='GitHub Commit Analyzer'
+        )
+
         daily_num_diff, project_num_diff = data_configuration()
         both_diffs = list(map(int, [daily_num_diff, project_num_diff]))
+
         for i, file in enumerate(csv_files):
             file_type = re.match(r'GH_(\w+)_data.csv', file).group(1).title()
             data = pd.read_csv(self.path / file, delimiter=',')
@@ -191,6 +194,7 @@ class GraphCSV:
 
             # Create separate subplot for each file
             ax = axes[i] if num_files > 1 else axes
+
             if file_type == 'Daily':
                 line, = ax.plot(x, y, marker='o', linestyle='-', label=file_type, color='green', mew=2, ms=5)
                 ax.legend([line], [f'{both_diffs[0]} Commits made'], loc='upper right', fontsize=7)
@@ -203,10 +207,18 @@ class GraphCSV:
             ax.set_xlabel(column1, fontsize=12)
             ax.set_ylabel(column2, fontsize=12)
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-        
-        plt.text(0.01, 2.531, f'Yearly Total Commits: {sum(y)}', transform=plt.gca().transAxes,
-                    fontsize=10, verticalalignment='baseline', bbox=dict(boxstyle='round', facecolor='white'))
+
+            # Adjust x-axis ticks
+            ax.set_xticks(range(len(x)))
+            ax.set_xticklabels(x, rotation=20, ha='right')
+
+        plt.text(0.01, 2.531, f'Yearly Total Commits: {sum(y)}',
+                transform=plt.gca().transAxes,
+                fontsize=10,
+                verticalalignment='baseline',
+                bbox=dict(boxstyle='round',facecolor='white'))
         plt.show()
+
 
 
 async def main():
