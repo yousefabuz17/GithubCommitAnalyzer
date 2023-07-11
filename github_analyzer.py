@@ -233,7 +233,14 @@ class GraphCSV:
                 verticalalignment='baseline',
                 bbox=dict(boxstyle='round',facecolor='white'))
         plt.savefig(self.path / 'Figures' / f'{self.get_date()}.jpeg', bbox_inches='tight')
-        #plt.show() # Uncomment to show graph. Using streamlit to display graphs instead
+        plt.close()
+        #plt.show() # Uncomment to show graph. Using streamlit to display all graphs instead
+
+def streamlit_graphs():
+    console.print('Opening GitHub Dashboard', style='bold cyan')
+    graph_filenames = [i.name for i in Path.cwd().glob('GithubCommitAnalyzer/Figures/*.jpeg')]
+    streamlit_app = Path.cwd() / 'GithubCommitAnalyzer/GitHubDashboard/streamlit_app.py'
+    subprocess.Popen(['streamlit', 'run', streamlit_app])
 
 async def main():
     console.print('\tGitHub Commit Analyzer', style='bold green')
@@ -252,11 +259,7 @@ async def main():
                 github.daily_parse_url(session)
             )
         GraphCSV().fetch_csv()
-        graph_filenames = [i.name for i in Path.cwd().glob('GithubCommitAnalyzer/Figures/*.jpeg')]
-        streamlit_app = Path.cwd() / 'GithubCommitAnalyzer/GitHubDashboard/streamlit_app.py'
-        dashboard = subprocess.Popen(['streamlit', 'run', streamlit_app])
-        if dashboard.returncode == 0:
-            console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
+        streamlit_graphs()
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         raise SystemExit
@@ -265,4 +268,4 @@ async def main():
 if __name__ == '__main__':
     try: asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
-        console.print('Program Terminated', style='bold red')
+        console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
