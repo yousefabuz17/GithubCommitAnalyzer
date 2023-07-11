@@ -5,6 +5,8 @@ import logging
 import os
 import re
 import shutil
+import subprocess
+import streamlit as st
 
 from datetime import datetime as dt
 from pathlib import Path
@@ -166,6 +168,7 @@ def data_configuration():
             console.print('Generating graphs', style='bold cyan')
             return daily_num_diff, project_num_diff
         console.print('No differences found based on previous data. Data will remain the same.', style='bold white')
+        console.print('Graph will be saved to \'Figures\' folder', style='bold white')
         console.print('Generating graphs', style='bold cyan')
         
     return [0, 0]   # If no difference is found
@@ -230,9 +233,7 @@ class GraphCSV:
                 verticalalignment='baseline',
                 bbox=dict(boxstyle='round',facecolor='white'))
         plt.savefig(self.path / 'Figures' / f'{self.get_date()}.jpeg', bbox_inches='tight')
-        plt.show()
-
-
+        #plt.show() # Uncomment to show graph. Using streamlit to display graphs instead
 
 async def main():
     console.print('\tGitHub Commit Analyzer', style='bold green')
@@ -251,7 +252,11 @@ async def main():
                 github.daily_parse_url(session)
             )
         GraphCSV().fetch_csv()
-        console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
+        graph_filenames = [i.name for i in Path.cwd().glob('GithubCommitAnalyzer/Figures/*.jpeg')]
+        streamlit_app = Path.cwd() / 'GithubCommitAnalyzer/GitHubDashboard/streamlit_app.py'
+        dashboard = subprocess.Popen(['streamlit', 'run', streamlit_app])
+        if dashboard.returncode == 0:
+            console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         raise SystemExit
