@@ -10,7 +10,7 @@ console = Console()
 def streamlit_graphs():
     st.set_page_config(
         page_title="GitHub Dashboard",
-        page_icon="📊",
+        page_icon="📈",
         layout="centered",
         initial_sidebar_state="auto",
     )
