@@ -253,8 +253,7 @@ async def main():
         GraphCSV().fetch_csv()
         console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
     except Exception as e:
-        # print(f"An error occurred: {str(e)}")
-        raise e
+        print(f"An error occurred: {str(e)}")
         raise SystemExit
 
 
