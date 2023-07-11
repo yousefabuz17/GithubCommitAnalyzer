@@ -10,6 +10,7 @@ import streamlit as st
 
 from datetime import datetime as dt
 from pathlib import Path
+from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -17,10 +18,6 @@ from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from matplotlib.ticker import MaxNLocator
 from rich.console import Console
-
-# TODO: Use Github API instead of web scraping
-# TODO: Save all graphs into a folder and use streamlit to display them
-# TODO: Add time and date on each graph
 
 console = Console()
 
@@ -33,7 +30,7 @@ class GithubCommit:
     async def projects_parse_url(self, session):
         data = []
         try:
-            for project in self.projects:
+            for project in tqdm(self.projects, desc='Parsing Projects Data'):
                 async with session.get(self.url + project) as response:
                     html = await response.text()
                     soup = BeautifulSoup(html, 'html.parser')
@@ -60,7 +57,7 @@ class GithubCommit:
             async with session.get(self.url) as response:
                 html = await response.text()
                 soup = BeautifulSoup(html, 'html.parser')
-                for i in soup.find_all('main'):
+                for i in tqdm(soup.find_all('main'), desc='Parsing Daily Data'):
                     for j in i.find_all(class_="ContributionCalendar-day"):
                         if j.text is None:
                             continue
@@ -169,8 +166,8 @@ def data_configuration():
             console.print('Generating graphs', style='bold cyan')
             return daily_num_diff, project_num_diff
         console.print('No differences found based on previous data. Data will remain the same.', style='bold white')
-        console.print('Graph will be saved to \'Figures\' folder', style='bold white')
         console.print('Generating graphs', style='bold cyan')
+        console.print('Graph will be saved to \'Figures\' folder', style='bold white')
         
     return [0, 0]   # If no difference is found
 
@@ -186,7 +183,7 @@ class GraphCSV:
     def get_date(self):
         modified_timestamp = dt.fromtimestamp(dt.timestamp(dt.now()))
         modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
-        return f"Figure_{modified_time}"
+        return modified_time
     
     def graph_csv(self, csv_files):
         num_files = len(csv_files)
@@ -196,7 +193,6 @@ class GraphCSV:
             gridspec_kw={'hspace': 0.5},
             num='GitHub Commit Analyzer'
         )
-
         daily_num_diff, project_num_diff = data_configuration()
         both_diffs = list(map(int, [daily_num_diff, project_num_diff]))
 
@@ -228,12 +224,17 @@ class GraphCSV:
             ax.set_xticks(range(len(x)))
             ax.set_xticklabels(x, rotation=20, ha='right')
 
-        plt.text(0.01, 2.531, f'Yearly Total Commits: {sum(y)}',
+        plt.text(0.005, 2.531, f'Yearly Total Commits: {sum(y)}',
                 transform=plt.gca().transAxes,
                 fontsize=10,
                 verticalalignment='baseline',
                 bbox=dict(boxstyle='round',facecolor='white'))
-        plt.savefig(self.path / 'Figures' / f'{self.get_date()}.jpeg', bbox_inches='tight')
+        plt.text(0.72, 2.531, f'Date: {self.get_date()}',
+                transform=plt.gca().transAxes,
+                fontsize=10,
+                verticalalignment='baseline',
+                bbox=dict(boxstyle='round',facecolor='white'))
+        plt.savefig(self.path / 'Figures' / f'Figure_{self.get_date()}.jpeg', bbox_inches='tight')
         #plt.show() # Uncomment to show graph. Using streamlit to display all graphs instead
         plt.close()
 
