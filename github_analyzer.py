@@ -152,7 +152,9 @@ def data_configuration():
         
         if not daily_diff.empty:
             console.print('New data found. Warping old data', style='yellow')   
-            get_diff = lambda diff: abs(diff['Commit Count'].diff().dropna().to_list()[0])
+            try: return lambda diff: abs(diff['Commit Count'].diff().dropna().to_list()[0])
+            except IndexError: return 0
+                
             daily_num_diff, project_num_diff = list(map(get_diff, [daily_diff, project_diff]))
             move_file(new_files)
             remove_oldest_files(old_data_path, 2)
@@ -240,7 +242,8 @@ async def main():
         GraphCSV().fetch_csv()
         console.print('\t\nGitHub Commit Analyzer Terminated.', style='bold red')
     except Exception as e:
-        print(f"An error occurred: {str(e)}")
+        # print(f"An error occurred: {str(e)}")
+        raise e
         raise SystemExit
 
 
