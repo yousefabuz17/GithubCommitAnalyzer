@@ -151,9 +151,12 @@ def data_configuration():
         project_diff = compare_csv(old_project_data, new_project_data)
         
         if not daily_diff.empty:
-            console.print('New data found. Warping old data', style='yellow')   
-            try: return lambda diff: abs(diff['Commit Count'].diff().dropna().to_list()[0])
-            except IndexError: return 0
+            console.print('New data found. Warping old data', style='yellow')
+            
+            def get_diff(diff):
+                try: return abs(diff['Commit Count'].diff().dropna().to_list()[0])
+                except: return 0
+
                 
             daily_num_diff, project_num_diff = list(map(get_diff, [daily_diff, project_diff]))
             move_file(new_files)
