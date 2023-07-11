@@ -33,6 +33,7 @@ The program will generate graphs displaying the commit data for each project and
 ---
 **Generated Graphs**
 ![Screen Shot 2023-07-10 at 4 25 37 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/96f2496b-38bd-4e79-872a-154d6114eb64)
+![Screen Shot 2023-07-10 at 8 03 47 PM](https://github.com/yousefabuz17/DirectoryCleaner/assets/68834704/a5e0f425-7c6b-4b7a-b8d4-2a162bd3e348)
 ---
 # Future Updates
 - Use GitHub API instead of webscraping
