@@ -26,14 +26,13 @@ GitHub Commit Analyzer is a Python application that fetches commit data from a u
 The program will generate graphs displaying the commit data for each project and daily commits in **real-time**. Below is an example of the generated graph and program states:
 
 **First Stage**
---
+---
 ![Screen Shot 2023-07-11 at 9 36 10 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/d3441eec-6f04-4fe0-a320-46a0a8cf51f4)
 ---
 **Second Stage**
---
-![Screen Shot 2023-07-11 at 9 32 11 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/dd95e8ce-d945-4896-8af6-9469307d7257)
+![Screen Shot 2023-07-11 at 9 41 47 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/89a7d968-79bc-4846-b4ce-d7acaf137d0f)
 ---
-**Streamlit Dashboard**
+**GitHub Dashboard Demo**
 ![Screen Shot 2023-07-11 at 9 31 11 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/ea5719eb-7704-4751-9fee-1684477f7d00)
 ---
 # Future Updates
