@@ -26,6 +26,45 @@ def streamlit_graphs():
 
     console.print(f"\nThere are a total of {len(graph_files)} graphs being displayed on the dashboard", style='bold white')
     st.title("GitHub Dashboard")
+    st.markdown("""
+            <style>
+            .badges {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .badge {
+                display: inline-block;
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                line-height: 1.4;
+                padding: 4px 8px;
+                border-radius: 4px;
+                text-decoration: none;
+                color: #FFFFFF;
+            }
+            .linkedin-badge {
+                background-color: #FFFFFF;
+            }
+            .github-badge {
+                background-color: #24292E;
+            }
+            .badge:hover {
+                opacity: 0.8;
+            }
+            .badge .name {
+                font-weight: bold;
+            }
+            </style>
+            <div class="badges">
+                <a class="badge linkedin-badge" href="https://www.linkedin.com/in/yousefabuz/" target="_blank">
+                    <span class="name">LinkedIn</span>
+                </a>
+                <a class="badge github-badge" href="https://github.com/yousefabuz17" target="_blank">
+                    <span class="name">GitHub</span>
+                </a>
+            </div>
+    """, unsafe_allow_html=True)
     for idx, graph in enumerate(graph_files, start=1):
         st.header(f"Graph {idx}")
         image_path = str(graph_path / graph)
