@@ -39,5 +39,6 @@ The program will generate graphs displaying the commit data for each project and
 # Future Updates
 - Use GitHub API instead of webscraping
 - Add more insights
+- Turn this program into a dashoard of some type that empowers GitHub users to gain valuable insights into their productivity and track the progress of specific projects. 
 
 
