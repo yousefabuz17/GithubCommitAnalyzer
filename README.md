@@ -30,6 +30,7 @@ The program will generate graphs displaying the commit data for each project and
 ![Screen Shot 2023-07-11 at 9 36 10 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/d3441eec-6f04-4fe0-a320-46a0a8cf51f4)
 ---
 **Second Stage**
+---
 ![Screen Shot 2023-07-11 at 9 41 47 PM](https://github.com/yousefabuz17/GithubCommitAnalyzer/assets/68834704/89a7d968-79bc-4846-b4ce-d7acaf137d0f)
 ---
 **GitHub Dashboard Demo**
