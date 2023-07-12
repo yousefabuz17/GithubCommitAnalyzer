@@ -6,7 +6,7 @@ import os
 import re
 import shutil
 import subprocess
-import streamlit as st
+import sys
 
 from datetime import datetime as dt
 from pathlib import Path
@@ -242,7 +242,7 @@ def streamlit_graphs():
     console.print('Opening GitHub Dashboard', style='bold cyan')
     graph_filenames = [i.name for i in Path.cwd().glob('GithubCommitAnalyzer/Figures/*.jpeg')]
     streamlit_app = Path.cwd() / 'GithubCommitAnalyzer/GitHubDashboard/streamlit_app.py'
-    subprocess.Popen(['streamlit', 'run', streamlit_app])
+    subprocess.run(['streamlit', 'run', '--server.port', '8501', streamlit_app])
 
 async def main():
     console.print('\tGitHub Commit Analyzer', style='bold green')
@@ -264,7 +264,7 @@ async def main():
         streamlit_graphs()
     except Exception as e:
         print(f"An error occurred: {str(e)}")
-        raise SystemExit
+        sys.exit(0)
 
 
 if __name__ == '__main__':
