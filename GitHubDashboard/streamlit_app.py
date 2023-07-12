@@ -1,6 +1,7 @@
 import os
 import streamlit as st
 import streamlit.config as config
+import sys
 
 from pathlib import Path
 from rich.console import Console
@@ -18,7 +19,7 @@ def streamlit_graphs():
     config.set_option("global.developmentMode", False)
 
     console.print("[bold green]\nStreamlit server is running on port 8501[/bold green]")
-    console.print('Press CTRL+C or close terminal anytime to terminate streamlit server', style='bold yellow')
+    console.print('Press CTRL+C anytime to terminate streamlit server', style='bold yellow')
     console.print("[link]Please visit my GitHub repository to see all of my projects:\nhttps://github.com/yousefabuz17[/link]")
     
     graph_path = Path(__file__).resolve().parent.parent / 'Figures'
@@ -71,4 +72,7 @@ def streamlit_graphs():
         st.image(image_path, use_column_width=True)
 
 if __name__ == '__main__':
-    streamlit_graphs()
+    try:
+        streamlit_graphs()
+    except KeyboardInterrupt:
+        sys.exit(0)
