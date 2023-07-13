@@ -182,7 +182,7 @@ class GraphCSV:
 
     def get_date(self):
         modified_timestamp = dt.fromtimestamp(dt.timestamp(dt.now()))
-        modified_time = modified_timestamp.strftime("%Y-%m-%d--%I:%M:%S%p")
+        modified_time = modified_timestamp.strftime("%I:%M:%S%p--%m-%d-%Y")
         return modified_time
     
     def graph_csv(self, csv_files):
@@ -235,7 +235,7 @@ class GraphCSV:
                 verticalalignment='baseline',
                 bbox=dict(boxstyle='round',facecolor='white'))
         plt.savefig(self.path / 'Figures' / f'Figure_{self.get_date()}.jpeg', bbox_inches='tight')
-        #plt.show() # Uncomment to show graph. Using streamlit to display all graphs instead
+        #plt.show() # Uncomment to show most current graph. Using streamlit to display all graphs instead
         plt.close()
 
 def streamlit_graphs():
